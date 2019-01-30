@@ -50,6 +50,9 @@ import java.util.Map;
 public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C extends Channel> implements Cloneable {
 
     volatile EventLoopGroup group;
+    /**
+     * Channel 工厂，用于创建 Channel 对象。
+     */
     @SuppressWarnings("deprecation")
     private volatile ChannelFactory<? extends C> channelFactory;
     private volatile SocketAddress localAddress;
@@ -82,10 +85,12 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         if (group == null) {
             throw new NullPointerException("group");
         }
-        if (this.group != null) {
+        if (this.group != null) { //不允许重复设置
             throw new IllegalStateException("group set already");
         }
         this.group = group;
+        //最终调用 #self() 方法，返回自己。
+        //实际上，AbstractBootstrap 整个方法的调用，基本都是“链式调用”。
         return self();
     }
 
